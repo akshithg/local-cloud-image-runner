@@ -1,0 +1,41 @@
+#cloud-config
+password: password
+chpasswd:
+  expire: False
+shell: /bin/bash
+ssh_authorized_keys:
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFbJf4ZqBvJ7GFSHppX38sJJ8HBYhS458mgLcxywiVok g@gmac
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB2/9ba1PDuOXcETN4l4haHREiTL4CDLgx28GvsYfDLY g@asahi
+  - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFfryqf3J0MgQLvC8cR2s+7LiNxfw9URYyIRgGwfwAJ+ g@fw-owyhee
+
+packages:
+  - build-essential
+  - libncurses-dev
+  - bison
+  - flex
+  - libssl-dev
+  - libelf-dev
+  - bc
+  - pahole
+  - linux-source-5.15.0
+  - apache2
+  - nginx
+  - redis-server
+  - mysql-server
+  - memcached
+
+runcmd:
+  - [sed, -i, "s/bind 127.0.0.1 ::1/bind 0.0.0.0 ::1/g", /etc/redis/redis.conf]
+  - [systemctl, disable, apache2]
+  - [systemctl, disable, nginx]
+  - [systemctl, disable, redis-server]
+  - [systemctl, disable, mysql-server]
+  - [systemctl, disable, memcached]
+  - [systemctl, mask, apparmor]
+  - [systemctl, mask, plymouth]
+  - [systemctl, mask, plymouth-log]
+  - [systemctl, mask, ufw]
+  - [systemctl, mask, unattended-upgrades]
+  - [cloud-init, clean]
+  - [touch, /etc/cloud/cloud-init.disabled]
+  - [reboot]
